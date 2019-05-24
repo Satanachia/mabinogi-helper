@@ -20,9 +20,11 @@ def login(driver, accounts):
 
     driver.get("https://event.beanfun.com/mabinogi/E20190523/index.aspx") 
 
-    driver.find_element_by_id("btnLogin").click()
-
     try:
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "btnLogin"))
+        ).click()
         
         iframe = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID,'ifmForm1'))
@@ -34,6 +36,7 @@ def login(driver, accounts):
         print ("login success")
     except TimeoutException:
         print('time out')
+        return 
     finally:
         print('finish')
         #選擇帳號
@@ -50,7 +53,7 @@ def login(driver, accounts):
         print('time out')
 
     #plant
-    time.sleep(5)
+    # time.sleep(5)
 
 def dothing():
     time.sleep(2)
@@ -68,6 +71,5 @@ if __name__ == "__main__":
         login(driver, [item['user'], item['pass']])
         dothing()
         driver.close()
-        print("%s 完成, 骰子数目%d個"%(item['user'], 0))
+        print("<%s> 完成, 骰子数目%d個"%(item['user'], 0))#TODO 骰子數目
 
-# */5 * * * *  /usr/bin/python3 /home/rd/Allan/mabinogi-helper/activity/anniversary/14/demo.py >> /home/rd/Allan/mabinogi-helper/log/anniversary/14/dailyLogin.log
