@@ -56,8 +56,14 @@ def login(driver, accounts):
     # time.sleep(5)
 
 def dothing():
-    time.sleep(2)
-    return
+    #lbInfoDice
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "lbInfoDice"))
+        )
+    except TimeoutException:
+        print('time out')
+    return element.text
 
 if __name__ == "__main__":
     
@@ -69,7 +75,7 @@ if __name__ == "__main__":
     for item in accountsInfos:
         driver = getDriver()
         login(driver, [item['user'], item['pass']])
-        dothing()
+        lbInfoDice = dothing()
         driver.close()
-        print("<%s> 完成, 骰子数目%d個"%(item['user'], 0))#TODO 骰子數目
+        print("<%s> 完成, 骰子数目%s個"%(item['user'], str(lbInfoDice)))#TODO 骰子數目
 
