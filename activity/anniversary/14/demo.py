@@ -33,12 +33,11 @@ def login(driver, accounts):
         driver.find_element_by_id("t_AccountID").send_keys(accounts[0])
         driver.find_element_by_id("t_Password").send_keys(accounts[1])
         driver.find_element_by_id("btn_login").click()
-        print ("login success")
     except TimeoutException:
         print('time out')
         return 
     finally:
-        print('finish')
+        print('login success')
         #選擇帳號
 
 
@@ -72,10 +71,15 @@ if __name__ == "__main__":
     with open('../../../common/config/accountsInfo.json') as f:
         accountsInfos = json.load(f)
 
-    for item in accountsInfos:
-        driver = getDriver()
-        login(driver, [item['user'], item['pass']])
-        lbInfoDice = dothing()
-        driver.close()
-        print("<%s> 完成, 骰子数目%s個"%(item['user'], str(lbInfoDice)))#TODO 骰子數目
+    try:
+        for item in accountsInfos:
+            driver = getDriver()
+            login(driver, [item['user'], item['pass']])
+            lbInfoDice = dothing()
+            driver.close()
+            print("<%s> 完成, 骰子数目%s個"%(item['user'], str(lbInfoDice)))
+    except Exception as e:
+        print(str(e))
 
+
+#*/5 * * * *
