@@ -9,9 +9,13 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
-
+from pyvirtualdisplay import Display
 
 def getDriver():
+
+    display = Display(visible=0, size=(800, 800))  
+    display.start()
+
     driver = webdriver.Chrome(executable_path='../../../common/tool/driver/chromedriver')     # 打开 Chrome 浏览器
     driver.set_window_size(150, 150)
     return driver
@@ -34,34 +38,38 @@ def login(driver, accounts):
         driver.find_element_by_id("t_Password").send_keys(accounts[1])
         driver.find_element_by_id("btn_login").click()
     except TimeoutException:
-        print('time out')
-        return 
-    finally:
-        print('login success')
-        #選擇帳號
-
+        print('[FAIL] <%s>login time out'%(accounts[0]))
+        return False
+    except:
+        print('[ERROR] <%s>login error'%(accounts[0]))
+        return False
 
     try:
-        element = WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "ddl_service_account"))
         )
         select = Select(driver.find_element_by_id('ddl_service_account'))
         select.select_by_index(1)
         driver.find_element_by_id("btn_send_service_account").click()
     except TimeoutException:
-        print('time out')
+        print('[FAIL] <%s>select time out'%(accounts[0]))
+        return False
+    except:
+        print('[ERROR] <%s>select error'%(accounts[0]))
+        return False
 
-    #plant
-    # time.sleep(5)
+    return True
 
-def dothing():
+def dothing(accounts):
     #lbInfoDice
     try:
-        element = WebDriverWait(driver, 10).until(
+        element = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "lbInfoDice"))
         )
     except TimeoutException:
-        print('time out')
+        print('[FAIL] <%s>get dice time out'%(accounts))
+    except:
+        print('[ERROR] <%s>get dice error'%(accounts))
     return element.text
 
 if __name__ == "__main__":
@@ -74,10 +82,17 @@ if __name__ == "__main__":
     try:
         for item in accountsInfos:
             driver = getDriver()
-            login(driver, [item['user'], item['pass']])
-            lbInfoDice = dothing()
+            if (login(driver, [item['user'], item['pass']]) is False):
+                driver.close()
+                driver = getDriver()
+                print("[WARN] 重新登入")
+                if (login(driver, [item['user'], item['pass']]) is False):
+                    print("[ERROR] 第二次登入失敗")
+                    continue
+            
+            lbInfoDice = dothing(item['user'])
             driver.close()
-            print("<%s> 完成, 骰子数目%s個"%(item['user'], str(lbInfoDice)))
+            print("[INFO] <%s> 完成, 骰子数目%s個"%(item['user'], str(lbInfoDice)))
     except Exception as e:
         print(str(e))
 
