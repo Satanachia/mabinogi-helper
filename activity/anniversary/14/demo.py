@@ -16,7 +16,7 @@ def getDriver():
     display = Display(visible=0, size=(800, 800))  
     display.start()
 
-    driver = webdriver.Chrome(executable_path='../../../common/tool/driver/chromedriver')     # 打开 Chrome 浏览器
+    driver = webdriver.Chrome(executable_path='/home/rd/Allan/mabinogi-helper/common/tool/driver/chromedriver')     # 打开 Chrome 浏览器
     driver.set_window_size(150, 150)
     return driver
 
@@ -34,14 +34,19 @@ def login(driver, accounts):
             EC.presence_of_element_located((By.ID,'ifmForm1'))
         )
         driver.switch_to.frame(iframe)
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "t_AccountID"))
+        )
+
         driver.find_element_by_id("t_AccountID").send_keys(accounts[0])
         driver.find_element_by_id("t_Password").send_keys(accounts[1])
         driver.find_element_by_id("btn_login").click()
     except TimeoutException:
         print('[FAIL] <%s>login time out'%(accounts[0]))
         return False
-    except:
-        print('[ERROR] <%s>login error'%(accounts[0]))
+    except Exception as e:
+        print('[ERROR] <%s>login error:%s'%(accounts[0], str(e)))
         return False
 
     try:
@@ -54,8 +59,8 @@ def login(driver, accounts):
     except TimeoutException:
         print('[FAIL] <%s>select time out'%(accounts[0]))
         return False
-    except:
-        print('[ERROR] <%s>select error'%(accounts[0]))
+    except Exception as e:
+        print('[ERROR] <%s>select error:%s'%(accounts[0], str(e)))
         return False
 
     return True
@@ -74,9 +79,9 @@ def dothing(accounts):
 
 if __name__ == "__main__":
     
-    print("=======================")
+    print("==============================================")
     print(date.today())
-    with open('../../../common/config/accountsInfo.json') as f:
+    with open('/home/rd/Allan/mabinogi-helper/common/config/accountsInfo.json') as f:
         accountsInfos = json.load(f)
 
     try:
