@@ -3,6 +3,7 @@ import time
 import  os
 import bossNotify
 import json
+import re
 
 already_print_num = 0
 notify_token = 'GHPM2e20SaEhBf6NJkqRtJMZzARrj7WHuaLMHFf87XJ'
@@ -17,7 +18,7 @@ def get_last_line(filepath):
         print ('no such file %s' % filepath)
         sys.exit()
         return
-    readfile = open(filepath, 'r')
+    readfile = open(filepath, 'r',encoding = 'utf16')
     lines = readfile.readlines()
     if len(lines) > 1 and already_print_num == 0:
         #last_num = 20  #首次输出最多输出20行
@@ -31,8 +32,11 @@ def get_last_line(filepath):
 
         for line in print_lines:
             #notify 
-            bossNotify.lineNotifyMessage(token['token'], line.replace('\n',''))
-            print(line.replace('\n',''))
+            msg = line.replace('\n','')
+            if re.search('出現了', msg):
+                msg = msg[msg.find('[CHANNEL'):len(msg)]
+                bossNotify.lineNotifyMessage(token['token'], msg)
+            print(msg)            
             # print len(lines), already_print_num, line.replace('\n','')
         already_print_num = len(lines)
     readfile.close()

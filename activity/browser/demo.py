@@ -1,34 +1,37 @@
 import json
 import time
 from datetime import date
+import psutil
 
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 
+windows_count = 0
 
 def getDriver():
 
     option = webdriver.ChromeOptions()
-    option.add_argument('--user-data-dir=../../common/config/google-chrome') #设置成用户自己的数据目录
+    option.add_argument('--user-data-dir=D:\\NNcode\\mabinogi-helper\\common\\config\\google-chrome') #设置成用户自己的数据目录
+    option.add_argument('lang=zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7')
 
     # display = Display(visible=0, size=(800, 800))  
     # display.start()
 
-    driver = webdriver.Chrome(executable_path='../../common/tool/driver/chromedriver',chrome_options=option)     # 打开 Chrome 浏览器
-    driver.set_window_size(150, 150)
-    driver.implicitly_wait(10)
+    driver = webdriver.Chrome(executable_path='../../common/tool/driver/chromedriver.exe',chrome_options=option)     # 打开 Chrome 浏览器
+    # driver.set_window_size(150, 150)
+    driver.implicitly_wait(20)
 
     return driver
 
 def login(driver, accounts):
 
-    driver.get('https://tw.beanfun.com/index.aspx')
+    driver.get('https://tw.beanfun.com/game_zone/')
 
     try:
         WebDriverWait(driver, 10).until(
@@ -67,7 +70,10 @@ def webStart(driver, accounts, sotp):
     return True
 
 def logout(driver, accounts):
-    driver.get('https://tw.beanfun.com/index.aspx')
+
+    print('[INFO] Start Logout.')
+    
+    driver.get('https://tw.beanfun.com/game_zone/')
     
     try:
         WebDriverWait(driver, 10).until(
@@ -94,23 +100,81 @@ def logout(driver, accounts):
 
     return True
 
+def checkIfProcessRunning(processName):
+    '''
+    Check if there is any running process that contains the given name processName.
+    '''
+    #Iterate over the all the running process
+    for proc in psutil.process_iter():
+        try:
+            # Check if process name contains the given name string.
+            if processName.lower() in proc.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+def findProcessIdByName(processName):
+    '''
+    Get a list of all the PIDs of a all the running process whose name contains
+    the given string processName
+    '''
+ 
+    listOfProcessObjects = []
+ 
+    #Iterate over the all the running process
+    for proc in psutil.process_iter():
+       try:
+           pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
+           # Check if process name contains the given name string.
+           if processName.lower() in pinfo['name'].lower() :
+               listOfProcessObjects.append(pinfo)
+       except (psutil.NoSuchProcess, psutil.AccessDenied , psutil.ZombieProcess) :
+           pass
+ 
+    return listOfProcessObjects
+
+def checkWindows():
+    global windows_count
+    listOfProcessIds = findProcessIdByName('Client.exe')
+    if (len(listOfProcessIds) > windows_count):
+        windows_count = len(listOfProcessIds)
+        return True
+    return False
+
+
 if __name__ == "__main__":
 
-    with open('/home/rd/Allan/mabinogi-helper/common/config/accountsInfo.json') as f:
+    listOfProcessIds = findProcessIdByName('Client.exe')
+    windows_count = len(listOfProcessIds)
+
+    with open('../../common/config/accountsInfo.json') as f:
         accountsInfos = json.load(f)
     driver = getDriver()
     
     try:
         for item in accountsInfos:
             if (login(driver, [item['user'], item['pass']]) is False):
-                driver.close()
-                driver = getDriver()
-                print("[WARN] 重新登入")
+                input('Please Login1')
                 if (login(driver, [item['user'], item['pass']]) is False):
-                    print("[ERROR] 第二次登入失敗")
+                    input('Please Login2')
+
             webStart(driver, item['user'], item['sotp'])
-            input('任意鍵繼續...')
+
+            timeout = 0
+            while checkWindows() is False and timeout < 30:
+                time.sleep(1)
+                timeout = timeout + 1
+            
+            if (timeout >= 30):
+                print('啟動超時')
+                exit()
+            
+            print('[INFO] 啟動%s成功'%(item['user']))
+
             logout(driver, item['user'])
             
     except Exception as e:
         print(str(e))
+    
+    driver.close()
