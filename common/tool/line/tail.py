@@ -6,14 +6,9 @@ import json
 import re
 
 already_print_num = 0
-notify_token = 'GHPM2e20SaEhBf6NJkqRtJMZzARrj7WHuaLMHFf87XJ'
 
 def get_last_line(filepath):
-    '''
-    获取未输入的行
-    '''
     global already_print_num
-    global notify_token
     if not os.path.exists(filepath):
         print ('no such file %s' % filepath)
         sys.exit()
@@ -21,8 +16,8 @@ def get_last_line(filepath):
     readfile = open(filepath, 'r',encoding = 'utf16')
     lines = readfile.readlines()
     if len(lines) > 1 and already_print_num == 0:
-        #last_num = 20  #首次输出最多输出20行
-        already_print_num = len(lines) - 1
+        #首次输出最多输出 n 行
+        already_print_num = len(lines) - 1#n = 1
 
     if already_print_num < len(lines):
         print_lines = lines[already_print_num - len(lines):]
@@ -34,17 +29,13 @@ def get_last_line(filepath):
             #notify 
             msg = line.replace('\n','')
             if re.search('出現了', msg):
-                msg = msg[msg.find('[CHANNEL'):len(msg)]
+                msg = msg[msg.find('[CHANNEL'):len(msg)]# 字串處理
                 bossNotify.lineNotifyMessage(token['token'], msg)
             print(msg)            
-            # print len(lines), already_print_num, line.replace('\n','')
         already_print_num = len(lines)
     readfile.close()
 
 def timer(filename):
-    '''
-    每隔1秒执行一次
-    '''
     while True:
         get_last_line(filename)
         time.sleep(1)
