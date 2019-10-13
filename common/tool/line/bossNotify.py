@@ -1,5 +1,5 @@
-from linebot import LineBotApi
-from linebot.models import TextSendMessage
+# from linebot import LineBotApi
+# from linebot.models import TextSendMessage
 import sys
 import time
 import requests
@@ -21,7 +21,7 @@ def lineNotifyMessage(token, msg):
         "Content-Type" : "application/x-www-form-urlencoded"
     }
 
-    payload = {'message': msg}
+    payload = {'message': str(msg)}
     r = requests.post("https://notify-api.line.me/api/notify", headers = headers, params = payload)
     return r.status_code
 

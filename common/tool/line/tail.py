@@ -42,7 +42,8 @@ def timer(filename):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('illegal params')
+        filename = "C:\\Nexon\\Mabinogi\\Tin_log.txt"
+        # print('illegal params')
     else:
         filename = sys.argv[1]
-        timer(filename)
+    timer(filename)

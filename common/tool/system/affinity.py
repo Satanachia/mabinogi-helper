@@ -24,4 +24,4 @@ listOfProcessIds = findProcessIdByName('Client.exe')
 
 for pid in listOfProcessIds:
     p = psutil.Process(pid['pid'])
-    p.cpu_affinity([0,1,2,3])
+    p.cpu_affinity([0,1,2,3,4,5,6,7])

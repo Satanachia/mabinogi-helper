@@ -2,6 +2,7 @@ import json
 import time
 from datetime import date
 import psutil
+import sys
 
 import requests
 # from bs4 import BeautifulSoup
@@ -25,7 +26,7 @@ def getDriver():
 
     driver = webdriver.Chrome(executable_path='../../common/tool/driver/chromedriver.exe',chrome_options=option)     # 打开 Chrome 浏览器
     # driver.set_window_size(150, 150)
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(30)
 
     return driver
 
@@ -89,6 +90,9 @@ def logout(driver, accounts):
             EC.presence_of_element_located((By.XPATH, '//*[@id="divConfirmButton"]/ul/li[1]/a'))
         ).click()
 
+        # if driver.url is not in 'logout':
+
+
         print('[INFO] <%s> logout success'%(accounts))
         
     except TimeoutException:
@@ -145,6 +149,11 @@ def checkWindows():
 
 if __name__ == "__main__":
 
+    accountIndex = 0
+
+    if (len(sys.argv) >= 2):
+        accountIndex = int(sys.argv[1]) 
+
     listOfProcessIds = findProcessIdByName('Client.exe')
     windows_count = len(listOfProcessIds)
 
@@ -153,13 +162,13 @@ if __name__ == "__main__":
     driver = getDriver()
     
     try:
-        for item in accountsInfos:
-            if (login(driver, [item['user'], item['pass']]) is False):
+        for accountIndex in range(accountIndex, len(accountsInfos)):
+            if (login(driver, [accountsInfos[accountIndex]['user'], accountsInfos[accountIndex]['pass']]) is False):
                 input('Please Login1')
-                if (login(driver, [item['user'], item['pass']]) is False):
+                if (login(driver, [accountsInfos[accountIndex]['user'], accountsInfos[accountIndex]['pass']]) is False):
                     input('Please Login2')
 
-            webStart(driver, item['user'], item['sotp'])
+            webStart(driver, accountsInfos[accountIndex]['user'], accountsInfos[accountIndex]['sotp'])
 
             timeout = 0
             while checkWindows() is False and timeout < 30:
@@ -170,9 +179,9 @@ if __name__ == "__main__":
                 print('啟動超時')
                 exit()
             
-            print('[INFO] 啟動%s成功'%(item['user']))
+            print('[INFO] 啟動%s成功'%(accountsInfos[accountIndex]['user']))
 
-            logout(driver, item['user'])
+            logout(driver, accountsInfos[accountIndex]['user'])
             
     except Exception as e:
         print(str(e))
