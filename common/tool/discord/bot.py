@@ -6,7 +6,7 @@ import json
 
 bot = commands.Bot(command_prefix='>')
 
-with open('../../config/discordToken.json') as f:
+with open('D:\\NNcode\\mabinogi-helper\\common\\config\\discordToken.json') as f:
     setting = json.load(f)
 bot_token = setting['token']
 
