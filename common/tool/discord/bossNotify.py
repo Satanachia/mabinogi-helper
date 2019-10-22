@@ -17,9 +17,15 @@ class BossNotify(Main):
         self.dgChannel = setting['dgChannel']
 
         self.already_print_num = 0
+
+        async def sendMsg(msg):
+            self.channel = self.bot.get_channel(634646567655047178)
+            await self.channel.send(msg)
+
         async def notify():
-            print("[INFO] Start Task")
             await self.bot.wait_until_ready()
+            await sendMsg("[INFO] Start Task")
+            print("[INFO] Start Task")
             self.channel = self.bot.get_channel(self.dgChannel) # default DG
             while not self.bot.is_closed():
                 msg = self.get_last_line()
@@ -30,7 +36,8 @@ class BossNotify(Main):
             print('[INFO] bot is close')
         try:
             self.bg_task = self.bot.loop.create_task(notify())
-        except asyncio.CancelledError as e:
+        except Exception as e:
+            await sendMsg('[Error] '+ str(e))
             print('[Error] '+ str(e))
 
     @commands.command()
