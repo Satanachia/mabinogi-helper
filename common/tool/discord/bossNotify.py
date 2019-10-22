@@ -28,7 +28,10 @@ class BossNotify(Main):
                         await self.channel.send(row)
                 await asyncio.sleep(1)
             print('[INFO] bot is close')
-        self.bg_task = self.bot.loop.create_task(notify())
+        try:
+            self.bg_task = self.bot.loop.create_task(notify())
+        except asyncio.CancelledError as e:
+            print('[Error] '+ str(e))
 
     @commands.command()
     async def ping(self, ctx):
