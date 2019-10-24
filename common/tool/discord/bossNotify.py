@@ -35,9 +35,11 @@ class BossNotify(Main):
                 await asyncio.sleep(1)
             print('[INFO] bot is close')
         try:
-            self.bg_task = self.bot.loop.create_task(notify())
+            if (self.bg_task.cancelled()):
+                self.bg_task = self.bot.loop.create_task(notify())
+
         except Exception as e:
-            await sendMsg('[Error] '+ str(e))
+            sendMsg('[Error] '+ str(e))
             print('[Error] '+ str(e))
 
     @commands.command()
