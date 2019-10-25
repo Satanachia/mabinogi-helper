@@ -29,7 +29,8 @@ class BossNotify(Main):
             self.channel = self.bot.get_channel(self.dgChannel) # default DG
             while not self.bot.is_closed():
                 msg = self.get_last_line()
-                await self.channel.send(msg)
+                if (msg is not None):
+                    await self.channel.send(msg)
                 await asyncio.sleep(2)
             print('[INFO] bot is close')
         try:
@@ -47,8 +48,8 @@ class BossNotify(Main):
         await ctx.send(f'{round(self.bot.latency*1000)} ms')
 
     def get_last_line(self, filepath = None):
-        bossMsg = []
-        if (filepath is None) :
+        bossMsg = None
+        if (filepath is None):
             filepath = "C:\\Nexon\\Mabinogi\\Tin_log.txt"
 
         if not os.path.exists(filepath):
