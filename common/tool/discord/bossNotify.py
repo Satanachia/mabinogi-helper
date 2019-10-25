@@ -34,7 +34,7 @@ class BossNotify(Main):
                 await asyncio.sleep(2)
             print('[INFO] bot is close')
         try:
-            self.bg_task = self.bot.loop.create_task(notify())
+            self.bg_task = self.bot.loop.create_task(notify(), name='notify')
 
         except IOError as e:
             # sendMsg('[Error] '+ str(e))
@@ -46,6 +46,31 @@ class BossNotify(Main):
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'{round(self.bot.latency*1000)} ms')
+
+    @commands.command()
+    async def getTasks(self, ctx):
+        tasks = asyncio.all_tasks()
+        print("[INFO] Task count %d"%(len(tasks)))
+        for task in tasks:
+            print(task)
+            taskName = task.get_name()
+            if (taskName == 'notify' and task.done()):
+                await ctx.send("[INFO] 等的就是這個BUG 解決這個就沒問題了 快去叫NN")
+
+            if (taskName == 'notify'):
+                await ctx.send("[INFO] 我還活著, 真的是Boss還沒出QAQ")
+                # break
+
+    @commands.command()
+    async def cancelTask(self, ctx):
+        tasks = asyncio.all_tasks()
+        print("[INFO] Task count %d"%(len(tasks)))
+        for task in tasks:
+            taskName = task.get_name()
+            if (taskName == 'notify'):
+                task.cancel()
+        await ctx.send("[INFO] 關閉所有報線任務, 重啟請下 >reload bossNotify ")
+
 
     def get_last_line(self, filepath = None):
         bossMsg = None
