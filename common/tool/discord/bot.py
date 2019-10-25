@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 import json
-# from bossNotify import BossNotify
+import asyncio
 
 bot = commands.Bot(command_prefix='>')
 
@@ -28,6 +28,12 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     bot.reload_extension(f'{extension}')
     await ctx.send(f'[INFO] ReLoad {extension} success')
+
+@bot.command()
+async def getTasks(ctx):
+    # loop = asyncio.get_event_loop()
+    tasks = asyncio.Task.all_tasks()
+    await ctx.send(f'[INFO] Tasks Count %d'%(len(tasks)))
 
 # for filename in os.listdir('./'):
 #     if filename.endswith('.py'):
