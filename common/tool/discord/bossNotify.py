@@ -49,17 +49,21 @@ class BossNotify(Main):
 
     @commands.command()
     async def getTasks(self, ctx):
+        hasTask = False
         tasks = asyncio.all_tasks()
         print("[INFO] Task count %d"%(len(tasks)))
         for task in tasks:
-            print(task)
+            # print(task)
             taskName = task.get_name()
             if (taskName == 'notify' and task.done()):
                 await ctx.send("[INFO] 等的就是這個BUG 解決這個就沒問題了 快去叫NN")
 
             if (taskName == 'notify'):
+                hasTask = True
                 await ctx.send("[INFO] 我還活著, 真的是Boss還沒出QAQ")
                 # break
+        if (hasTask is False):
+            await ctx.send("[INFO] 目前沒有任何任務喔")
 
     @commands.command()
     async def cancelTask(self, ctx):
