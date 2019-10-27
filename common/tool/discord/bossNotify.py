@@ -64,6 +64,8 @@ class BossNotify(Main):
                 # break
         if (hasTask is False):
             await ctx.send("[INFO] 目前沒有任何任務喔")
+            print(self.bg_task.exception())
+
 
     @commands.command()
     async def cancelTask(self, ctx):
