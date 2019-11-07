@@ -11,32 +11,52 @@ class BossNotify(Main):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open('D:\\NNcode\\mabinogi-helper\\common\\config\\discordToken.json') as f:
-            setting = json.load(f)
-        self.bwChannel = setting['bwChannel']
-        self.dgChannel = setting['dgChannel']
+        async def sendMsg(msg):
+            self.channel = self.bot.get_channel(self.debugChannel)  
+            await self.channel.send(msg)
 
         self.already_print_num = 0
+
         async def notify():
-            print("[INFO] Start Task")
             await self.bot.wait_until_ready()
+            await sendMsg("[INFO] Start Task")
+            print("[INFO] Start Task")
             self.channel = self.bot.get_channel(self.dgChannel) # default DG
             while not self.bot.is_closed():
-                msg = self.get_last_line()
+                try:
+                    msg = self.get_last_line()
+                except IOError as e:
+                    # sendMsg('[Error] '+ str(e))
+                    print('[Error] '+ str(e))
+                except Exception as e:
+                    # sendMsg('[Error] '+ str(e))
+                    print('[Error] '+ str(e))
+
                 if (msg is not None):
-                    for row in msg:
-                        await self.channel.send(row)
-                await asyncio.sleep(1)
+                    await self.channel.send(msg)
+                await asyncio.sleep(2)
             print('[INFO] bot is close')
-        self.bg_task = self.bot.loop.create_task(notify())
+
+        self.bg_task = self.bot.loop.create_task(notify(), name='notify')
 
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'{round(self.bot.latency*1000)} ms')
 
+    @commands.command()
+    async def cancelTask(self, ctx):
+        tasks = asyncio.all_tasks()
+        print("[INFO] Task count %d"%(len(tasks)))
+        for task in tasks:
+            taskName = task.get_name()
+            if (taskName == 'notify'):
+                task.cancel()
+        await ctx.send("[INFO] 關閉所有報線任務, 重啟請下 >reload bossNotify ")
+
+
     def get_last_line(self, filepath = None):
-        bossMsg = []
-        if (filepath is None) :
+        bossMsg = None
+        if (filepath is None):
             filepath = "C:\\Nexon\\Mabinogi\\Tin_log.txt"
 
         if not os.path.exists(filepath):
@@ -48,25 +68,23 @@ class BossNotify(Main):
 
         if len(lines) > 1 and self.already_print_num == 0:
             #首次输出最多输出 n 行
-            self.already_print_num = len(lines) - 1#n = 1
+            self.already_print_num = len(lines) - 1 #n = 1
 
         if self.already_print_num < len(lines):
-            print_lines = lines[self.already_print_num - len(lines):]
+            print_line = lines[self.already_print_num]
 
-            for line in print_lines:
-                #notify 
-                msg = line.replace('\n','')
-                if re.search('出現了', msg):
-                    bossMsg.append(msg[msg.find('[CHANNEL'):len(msg)])# 字串處理
+            #notify 
+            msg = print_line.replace('\n','')
+            if re.search('出現了', msg):
+                bossMsg = msg[msg.find('[CHANNEL'):len(msg)]# 字串處理
 
-                if re.search('阿瓦隆', msg):
-                    self.channel = self.bot.get_channel(self.dgChannel)
+            if re.search('阿瓦隆', msg):
+                self.channel = self.bot.get_channel(self.dgChannel)
 
-                if re.search('白龍', msg) or re.search('黑龍', msg):
-                    self.channel = self.bot.get_channel(self.bwChannel)              
-
-                print(msg)            
-            self.already_print_num = len(lines)
+            if re.search('白龍', msg) or re.search('黑龍', msg):
+                self.channel = self.bot.get_channel(self.bwChannel)              
+            print(msg)
+            self.already_print_num = self.already_print_num + 1
 
         readfile.close()
         return bossMsg

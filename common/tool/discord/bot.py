@@ -1,8 +1,9 @@
+import asyncio
+import json
+import os
+
 import discord
 from discord.ext import commands
-import os
-import json
-# from bossNotify import BossNotify
 
 bot = commands.Bot(command_prefix='>')
 
@@ -34,7 +35,7 @@ async def reload(ctx, extension):
 #         bot.load_extension(f'cmds.{filename[:-3]}')
 
 bot.load_extension('bossNotify')
+bot.load_extension('heartBeat')
 
 if __name__ == "__main__":
     bot.run(bot_token)
-
