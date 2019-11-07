@@ -53,6 +53,14 @@ class BossNotify(Main):
                 task.cancel()
         await ctx.send("[INFO] 關閉所有報線任務, 重啟請下 >reload bossNotify ")
 
+    @commands.command()
+    async def getLastMessage(self, ctx):
+        self.channel = self.bot.get_channel(self.debugChannel)
+        messages = await channel.history(limit=5)
+        for message in messages:
+            self.channel.send(message.id)
+            await message.edit('~~%s~~'%(message.content))
+
 
     def get_last_line(self, filepath = None):
         bossMsg = None
