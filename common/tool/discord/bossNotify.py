@@ -11,16 +11,11 @@ class BossNotify(Main):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open('D:\\NNcode\\mabinogi-helper\\common\\config\\discordToken.json') as f:
-            setting = json.load(f)
-        self.bwChannel = setting['bwChannel']
-        self.dgChannel = setting['dgChannel']
+        async def sendMsg(msg):
+            self.channel = self.bot.get_channel(self.debugChannel)  
+            await self.channel.send(msg)
 
         self.already_print_num = 0
-
-        async def sendMsg(msg):
-            self.channel = self.bot.get_channel(634646567655047178)
-            await self.channel.send(msg)
 
         async def notify():
             await self.bot.wait_until_ready()
@@ -28,44 +23,25 @@ class BossNotify(Main):
             print("[INFO] Start Task")
             self.channel = self.bot.get_channel(self.dgChannel) # default DG
             while not self.bot.is_closed():
-                msg = self.get_last_line()
+                try:
+                    msg = self.get_last_line()
+                except IOError as e:
+                    # sendMsg('[Error] '+ str(e))
+                    print('[Error] '+ str(e))
+                except Exception as e:
+                    # sendMsg('[Error] '+ str(e))
+                    print('[Error] '+ str(e))
+
                 if (msg is not None):
                     await self.channel.send(msg)
                 await asyncio.sleep(2)
             print('[INFO] bot is close')
-        try:
-            self.bg_task = self.bot.loop.create_task(notify(), name='notify')
 
-        except IOError as e:
-            # sendMsg('[Error] '+ str(e))
-            print('[Error] '+ str(e))
-        except Exception as e:
-            # sendMsg('[Error] '+ str(e))
-            print('[Error] '+ str(e))
+        self.bg_task = self.bot.loop.create_task(notify(), name='notify')
 
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'{round(self.bot.latency*1000)} ms')
-
-    @commands.command()
-    async def getTasks(self, ctx):
-        hasTask = False
-        tasks = asyncio.all_tasks()
-        print("[INFO] Task count %d"%(len(tasks)))
-        for task in tasks:
-            # print(task)
-            taskName = task.get_name()
-            if (taskName == 'notify' and task.done()):
-                await ctx.send("[INFO] 等的就是這個BUG 解決這個就沒問題了 快去叫NN")
-
-            if (taskName == 'notify'):
-                hasTask = True
-                await ctx.send("[INFO] 我還活著, 真的是Boss還沒出QAQ")
-                # break
-        if (hasTask is False):
-            await ctx.send("[INFO] 目前沒有任何任務喔")
-            print(self.bg_task.exception())
-
 
     @commands.command()
     async def cancelTask(self, ctx):

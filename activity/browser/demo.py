@@ -24,7 +24,7 @@ def getDriver():
     # display = Display(visible=0, size=(800, 800))  
     # display.start()
 
-    driver = webdriver.Chrome(executable_path='../../common/tool/driver/chromedriver.exe',chrome_options=option)     # 打开 Chrome 浏览器
+    driver = webdriver.Chrome(executable_path='D:/NNcode/mabinogi-helper/common/tool/driver/chromedriver.exe',chrome_options=option)     # 打开 Chrome 浏览器
     # driver.set_window_size(150, 150)
     driver.implicitly_wait(30)
 
@@ -39,12 +39,12 @@ def login(driver, accounts):
             EC.presence_of_element_located((By.ID, "BF_anchorLoginBtn"))
         ).click()
         
-        iframe = WebDriverWait(driver, 10).until(
+        iframe = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID,'ifmForm1'))
         )
         driver.switch_to.frame(iframe)
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "t_AccountID"))
         )
 
@@ -157,7 +157,7 @@ if __name__ == "__main__":
     listOfProcessIds = findProcessIdByName('Client.exe')
     windows_count = len(listOfProcessIds)
 
-    with open('../../common/config/accountsInfo.json') as f:
+    with open('D:/NNcode/mabinogi-helper/common/config/accountsInfo.json') as f:
         accountsInfos = json.load(f)
     driver = getDriver()
     
@@ -182,6 +182,7 @@ if __name__ == "__main__":
             print('[INFO] 啟動%s成功'%(accountsInfos[accountIndex]['user']))
 
             logout(driver, accountsInfos[accountIndex]['user'])
+            driver.set_window_position(0, 0)
             
     except Exception as e:
         print(str(e))
