@@ -56,7 +56,7 @@ class BossNotify(Main):
     @commands.command()
     async def getLastMessage(self, ctx):
         self.channel = self.bot.get_channel(self.debugChannel)
-        messages = await channel.history(limit=5)
+        messages = await self.channel.history(limit=5)
         for message in messages:
             self.channel.send(message.id)
             await message.edit('~~%s~~'%(message.content))
