@@ -10,6 +10,7 @@ import re
 class BossNotify(Main):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.channel = self.bot.get_channel(self.dgChannel) # default DG
 
         async def sendMsg(msg):
             self.channel = self.bot.get_channel(self.debugChannel)  
@@ -21,15 +22,12 @@ class BossNotify(Main):
             await self.bot.wait_until_ready()
             await sendMsg("[INFO] Start Task")
             print("[INFO] Start Task")
-            self.channel = self.bot.get_channel(self.dgChannel) # default DG
             while not self.bot.is_closed():
                 try:
-                    msg = self.get_last_line()
+                    msg = await self.get_last_line()
                 except IOError as e:
-                    # sendMsg('[Error] '+ str(e))
                     print('[Error] '+ str(e))
                 except Exception as e:
-                    # sendMsg('[Error] '+ str(e))
                     print('[Error] '+ str(e))
 
                 if (msg is not None):
@@ -53,15 +51,22 @@ class BossNotify(Main):
                 task.cancel()
         await ctx.send("[INFO] 關閉所有報線任務, 重啟請下 >reload bossNotify ")
 
-    @commands.command()
-    async def getLastMessage(self, ctx):
-        self.channel = self.bot.get_channel(self.debugChannel)
-        async for message in self.channel.history(limit=5):
-            self.channel.send(message.id)
-            await message.edit('~~%s~~'%(message.content))
+    async def getLastMessage(self, msg, limit = 5):
+        channelMsg = msg[msg.find('[CHANNEL'):msg.find('[CHANNEL') + 10]
+        tailMsg = msg[-4:len(msg)]
+
+        # self.channel = self.bot.get_channel(self.debugChannel)
+        # TODO after=datetime.datetime
+        async for message in self.channel.history(limit=limit):
+            content = message.content
+            channelContent = content[content.find('[CHANNEL'):content.find('[CHANNEL') + 10]
+            tailContent = content[-4:len(content)]
+            if (message.author.id == 632551985350180877 and channelMsg == channelContent and tailMsg == tailContent):
+                print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
+                await message.edit(content='~~%s~~'%(message.content))
 
 
-    def get_last_line(self, filepath = None):
+    async def get_last_line(self, filepath = None):
         bossMsg = None
         if (filepath is None):
             filepath = "C:\\Nexon\\Mabinogi\\Tin_log.txt"
@@ -85,11 +90,21 @@ class BossNotify(Main):
             if re.search('出現了', msg):
                 bossMsg = msg[msg.find('[CHANNEL'):len(msg)]# 字串處理
 
-            if re.search('阿瓦隆', msg):
-                self.channel = self.bot.get_channel(self.dgChannel)
+                if re.search('阿瓦隆', msg):
+                    self.channel = self.bot.get_channel(self.dgChannel)
 
-            if re.search('白龍', msg) or re.search('黑龍', msg):
-                self.channel = self.bot.get_channel(self.bwChannel)              
+                if re.search('白龍', msg) or re.search('黑龍', msg):
+                    self.channel = self.bot.get_channel(self.bwChannel)
+
+            if (re.search('消滅了', msg) or re.search('擊退了', msg)):
+                if (re.search('赫朗格尼爾', msg) or re.search('森林巨龍', msg)):
+                    self.channel = self.bot.get_channel(self.dgChannel)
+                    await self.getLastMessage(msg)
+
+                if (re.search('黑龍', msg) or re.search('白龍', msg)):
+                    self.channel = self.bot.get_channel(self.bwChannel)
+                    await self.getLastMessage(msg, 22)
+
             print(msg)
             self.already_print_num = self.already_print_num + 1
 
