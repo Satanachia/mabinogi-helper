@@ -174,16 +174,16 @@ if __name__ == "__main__":
             while checkWindows() is False and timeout < 30:
                 time.sleep(1)
                 timeout = timeout + 1
-            
-            if (timeout >= 30):
-                print('啟動超時')
-                exit()
-            
-            print('[INFO] 啟動%s成功'%(accountsInfos[accountIndex]['user']))
 
             logout(driver, accountsInfos[accountIndex]['user'])
             driver.set_window_position(0, 0)
             
+            if (timeout >= 30):
+                print('[WRONG] 啟動%s超時'%(accountsInfos[accountIndex]['user']))
+                accountIndex = accountIndex - 1
+            else:
+                print('[INFO] 啟動%s成功'%(accountsInfos[accountIndex]['user']))
+
     except Exception as e:
         print(str(e))
     
