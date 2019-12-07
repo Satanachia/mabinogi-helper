@@ -5,6 +5,7 @@ import asyncio
 import os
 import sys
 import json
+import datetime
 import re
 
 class BossNotify(Main):
@@ -51,17 +52,21 @@ class BossNotify(Main):
                 task.cancel()
         await ctx.send("[INFO] 關閉所有報線任務, 重啟請下 >reload bossNotify ")
 
-    async def getLastMessage(self, msg, limit = 5):
+    async def getLastMessage(self, msg):
         channelMsg = msg[msg.find('[CHANNEL'):msg.find('[CHANNEL') + 10]
         tailMsg = msg[-4:len(msg)]
 
+        now = datetime.datetime.utcnow()
+        thisHour = now.strftime("%Y-%m-%d %H:00:00")
+        thisHour = datetime.datetime.strptime(thisHour, '%Y-%m-%d %H:%M:%S')
+
         # self.channel = self.bot.get_channel(self.debugChannel)
         # TODO after=datetime.datetime
-        async for message in self.channel.history(limit=limit):
+        async for message in self.channel.history(after=thisHour):
             content = message.content
             channelContent = content[content.find('[CHANNEL'):content.find('[CHANNEL') + 10]
             tailContent = content[-4:len(content)]
-            if (message.author.id == 632551985350180877 and channelMsg == channelContent and tailMsg == tailContent):
+            if (message.author.id == self.botID and channelMsg == channelContent and tailMsg == tailContent):
                 print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
                 await message.edit(content='~~%s~~'%(message.content))
 
@@ -103,7 +108,7 @@ class BossNotify(Main):
 
                 if (re.search('黑龍', msg) or re.search('白龍', msg)):
                     self.channel = self.bot.get_channel(self.bwChannel)
-                    await self.getLastMessage(msg, 22)
+                    await self.getLastMessage(msg)
 
             print(msg)
             self.already_print_num = self.already_print_num + 1
