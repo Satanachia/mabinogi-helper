@@ -37,8 +37,11 @@ def get_last_line(filepath):
 
 def timer(filename):
     while True:
-        get_last_line(filename)
-        time.sleep(1)
+        try:
+            get_last_line(filename)
+            time.sleep(1)
+        except Exception as e:
+            print('[Error] '+ str(e))
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
