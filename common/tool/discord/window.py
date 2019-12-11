@@ -12,7 +12,7 @@ class Window(Main):
 
 
     @commands.command()
-    async def channelStatus(self):
+    async def channelStatus(self, ctx):
         checkList = self.checkChannel()
         embed = discord.Embed()
         for k,v in enumerate(checkList):
@@ -20,7 +20,7 @@ class Window(Main):
             value = ':green_circle:' if v else ':red_circle:' 
 
             embed.add_field(name=title, value=value, inline=True)
-        await self.bot.say(embed=embed)
+        await ctx.say(embed=embed)
 
     async def checkChannel(self):
         winList = []
