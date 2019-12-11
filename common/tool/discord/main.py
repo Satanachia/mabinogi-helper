@@ -14,5 +14,5 @@ class Main(commands.Cog):
         self.dgChannel = setting['dgChannel']
         self.chatChannel = setting['chatChannel']
         self.debugChannel = setting['debugChannel']
-
+        self.botID = setting['botID']
         self.hasHeartBeat = False
