@@ -36,6 +36,7 @@ async def reload(ctx, extension):
 
 bot.load_extension('bossNotify')
 bot.load_extension('heartBeat')
+bot.load_extension('window')
 
 if __name__ == "__main__":
     bot.run(bot_token)
