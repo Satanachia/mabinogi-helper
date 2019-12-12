@@ -14,15 +14,17 @@ class Window(Main):
     @commands.command()
     async def channelStatus(self, ctx):
         checkList = self.checkChannel()
-        embed = discord.Embed()
+        embed = discord.Embed(title="在線情況", color=0x00ffff)
         for k,v in enumerate(checkList):
             title = '[CHANNEL%d]'%(k+1)
             value = ':green_circle:' if v else ':red_circle:' 
 
             embed.add_field(name=title, value=value, inline=True)
-        await ctx.say(embed=embed)
 
-    async def checkChannel(self):
+        embed.add_field(name='[NNcode]', value=':ok: ', inline=True)
+        await ctx.send(embed=embed)
+
+    def checkChannel(self):
         winList = []
         def get_all_hwnd(hwnd,mouse):
             if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
