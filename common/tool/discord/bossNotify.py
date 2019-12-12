@@ -18,6 +18,7 @@ class BossNotify(Main):
             await self.channel.send(msg)
 
         self.already_print_num = 0
+        self.lastMsg = None
 
         async def notify():
             await self.bot.wait_until_ready()
@@ -31,7 +32,8 @@ class BossNotify(Main):
                 except Exception as e:
                     print('[Error] '+ str(e))
 
-                if (msg is not None):
+                if (msg is not None and msg != self.lastMsg):
+                    self.lastMsg = msg
                     await self.channel.send(msg)
                 await asyncio.sleep(2)
             print('[INFO] bot is close')
