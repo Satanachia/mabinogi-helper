@@ -66,7 +66,7 @@ class BossNotify(Main):
             content = message.content
             channelContent = content[content.find('[CHANNEL'):content.find('[CHANNEL') + 10]
             tailContent = content[-4:len(content)]
-            if (message.author.id == 632551985350180877 and channelMsg == channelContent and tailMsg == tailContent):
+            if (message.author.id == self.botID and channelMsg == channelContent and tailMsg == tailContent):
                 print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
                 await message.edit(content='~~%s~~'%(message.content))
 
