@@ -14,14 +14,14 @@ class Window(Main):
     @commands.command()
     async def channelStatus(self, ctx):
         checkList = self.checkChannel()
-        embed = discord.Embed(title="在線情況", color=0x00ffff)
+        embed = discord.Embed(title="在線情況", color=0x3678F1)
         for k,v in enumerate(checkList):
             title = '[CHANNEL%d]'%(k+1)
             value = ':green_circle:' if v else ':red_circle:' 
 
             embed.add_field(name=title, value=value, inline=True)
 
-        embed.add_field(name='[NNcode]', value=':ok: ', inline=True)
+        embed.add_field(name='[NNcode]', value='收隕星體~', inline=True)
         await ctx.send(embed=embed)
 
     def checkChannel(self):
@@ -31,7 +31,13 @@ class Window(Main):
                 clsname = win32gui.GetClassName(hwnd)
                 if (clsname == 'Mabinogi'):
                     title = win32gui.GetWindowText(hwnd)
-                    winList.append(title)
+
+                    tid, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    p = psutil.Process(pid)
+                    c = p.connections()
+                    if (len(c) > 0) {
+                        winList.append(title)
+                    }
 
         win32gui.EnumWindows(get_all_hwnd, 0)
         # print(winList)
