@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 
 import discord
 from discord.ext import commands
@@ -39,4 +40,8 @@ bot.load_extension('heartBeat')
 bot.load_extension('window')
 
 if __name__ == "__main__":
-    bot.run(bot_token)
+
+    while True:
+        bot.run(bot_token)
+        print("重新連線....")
+        time.sleep(5)
