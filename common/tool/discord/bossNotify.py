@@ -68,6 +68,10 @@ class BossNotify(Main):
         # TODO after=datetime.datetime
         async for message in self.channel.history(after=thisHour):
             content = message.content
+
+            if (re.findall("\~\~", content)):
+                continue
+
             channelContent = re.findall("\[CHANNEL[1-9]{1,2}\]", content)[0]
             tailContent = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", content)[0]
             if (message.author.id == self.botID and channelMsg == channelContent and tailMsg == tailContent):
