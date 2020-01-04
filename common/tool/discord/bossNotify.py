@@ -57,8 +57,8 @@ class BossNotify(Main):
 
     async def getLastMessage(self, msg):
         #判斷 CHANNEL
-        channelMsg = re.findall("\[CHANNEL[1-9]{1,2}\]", msg)[0]
-        tailMsg = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", msg)[0]
+        channelMsg = re.findall("\[CHANNEL[1-9]{1,2}\]", msg)
+        tailMsg = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", msg)
 
         now = datetime.datetime.utcnow() - timedelta(hours = 1)
         thisHour = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -70,12 +70,13 @@ class BossNotify(Main):
             content = message.content
 
             if (re.findall("\~\~", content)):
+                print("[INFO] Alread edit message")
                 continue
 
-            channelContent = re.findall("\[CHANNEL[1-9]{1,2}\]", content)[0]
-            tailContent = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", content)[0]
+            channelContent = re.findall("\[CHANNEL[1-9]{1,2}\]", content)
+            tailContent = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", content)
             if (message.author.id == self.botID and channelMsg == channelContent and tailMsg == tailContent):
-                # print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
+                print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
                 await message.edit(content='~~%s~~'%(message.content))
 
 
