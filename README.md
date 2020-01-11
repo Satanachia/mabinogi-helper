@@ -28,4 +28,3 @@
 ```
 pip install -r requirements.txt
 ```
-<iframe src="https://discordapp.com/widget?id=632783197968662528&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
