@@ -126,7 +126,7 @@ class BeanfunLogin(object):
         otp = cipher.decrypt(binascii.a2b_hex(plain))
         otp = otp.decode()
         # print(otp)
-        return otp
+        return otp.strip(b'\x00'.decode())
 
 
 if __name__ == "__main__":
@@ -137,14 +137,13 @@ if __name__ == "__main__":
     for account in accountsInfos:
         # print(account['user'], account['pass'])
         
-        # model = BeanfunLogin(account['user'], account['pass'])
-        # otp = model.getOTP()
+        model = BeanfunLogin(account['user'], account['pass'])
+        otp = model.getOTP()
         # print("acc:%s, sacc:%s, pass:%s"%(account['user'], model.sacc, otp))
-        # command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:\"file://data/features.xml=Regular, Taiwan\" /N:%s /V:%s /T:gamania'%(model.sacc, otp)
-        command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:"file://data/features.xml=Regular, Taiwan"'
-        # print(command) 
-        os.system(command)                 
-        # subprocess.call(['C:/Nexon/Mabinogi/Morrighan.exe', 'code:1622', 'ver:306', 'logip:210.208.80.6', 'logport:11000', 'chatip:210.208.80.10', 'chatport:8004', 'setting:"file://data/features.xml=Regular, Taiwan"', '/N:' + str(model.sacc), '/V:' + str(otp), '/T:gamania'])
-        # subprocess.call(['C:\\Nexon\\Mabinogi\\Morrighan.exe', 'code:1622', 'ver:306', 'logip:210.208.80.6', 'logport:11000', 'chatip:210.208.80.10', 'chatport:8004', 'setting:"file://data/features.xml=Regular, Taiwan"'])
+        command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:\"file://data/features.xml=Regular, Taiwan\" /N:%s /V:%s /T:gamania'%(model.sacc, otp)
+        # command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:"file://data/features.xml=Regular, Taiwan"'
+        print(command) 
+        os.system(command)
+        
         break
         # time.sleep(10)
