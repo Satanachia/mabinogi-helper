@@ -1,0 +1,4 @@
+discord.py==1.2.4
+psutil==5.6.7
+# pywin32==227
+

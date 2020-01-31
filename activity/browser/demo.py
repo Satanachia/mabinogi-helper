@@ -77,16 +77,16 @@ def logout(driver, accounts):
     driver.get('https://tw.beanfun.com/game_zone/')
     
     try:
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "BF_btnLogout"))
         ).click()
 
-        iframe = WebDriverWait(driver, 10).until(
+        iframe = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID,'fbContent'))
         )
         driver.switch_to.frame(iframe)
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.XPATH, '//*[@id="divConfirmButton"]/ul/li[1]/a'))
         ).click()
 

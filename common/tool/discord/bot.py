@@ -42,6 +42,10 @@ bot.load_extension('window')
 if __name__ == "__main__":
 
     while True:
-        bot.run(bot_token)
-        print("重新連線....")
-        time.sleep(5)
+
+        try:
+            bot.run(bot_token)
+            print("重新連線....")
+            time.sleep(5)
+        except Exception as e:
+            print('[Error] %s'%(str(e)))
