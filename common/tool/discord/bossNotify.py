@@ -70,7 +70,7 @@ class BossNotify(Main):
             content = message.content
 
             if (re.findall("\~\~", content)):
-                print("[INFO] Alread edit message")
+                # print("[INFO] Alread edit message")
                 continue
 
             channelContent = re.findall("\[CHANNEL[0-9]{1,2}\]", content)

@@ -23,7 +23,7 @@ class Window(Main):
 
             embed.add_field(name=title, value=value, inline=True)
         #TODO 廣告寫到config
-        embed.add_field(name='[NNcode]', value='誠收隕星體~~', inline=True)
+        embed.add_field(name='[小額贊助]', value='[贊助NN](https://p.ecpay.com.tw/17411)', inline=True)
         await ctx.send(embed=embed)
 
     def checkChannel(self):
