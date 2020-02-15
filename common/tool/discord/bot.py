@@ -41,11 +41,14 @@ bot.load_extension('window')
 
 if __name__ == "__main__":
 
-    while True:
-
+    retryIndex = 0
+    while True:    
         try:
             bot.run(bot_token)
             print("重新連線....")
             time.sleep(5)
         except Exception as e:
+            retryIndex = retryIndex + 1
             print('[Error] %s'%(str(e)))
+            if (retryIndex > 3):
+                break
