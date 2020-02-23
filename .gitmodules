@@ -1,0 +1,3 @@
+[submodule "activity/browser/mabi-bflogin"]
+	path = activity/browser/mabi-bflogin
+	url = git@github.com:NNSound/mabi-bflogin.git
