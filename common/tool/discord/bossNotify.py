@@ -8,6 +8,7 @@ import json
 import datetime
 from datetime import timedelta
 import re
+import requests
 
 class BossNotify(Main):
     def __init__(self, *args, **kwargs):
@@ -77,6 +78,7 @@ class BossNotify(Main):
             tailContent = re.findall("森林巨龍|赫朗格尼爾|黑龍|白龍", content)
             if (message.author.id == self.botID and channelMsg == channelContent and tailMsg == tailContent):
                 print('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
+                self.sethook('[INFO] Try to edit message, id:%d, content:%s, keyword:%s'%(message.id, message.content, msg))
                 await message.edit(content='~~%s~~'%(message.content))
 
 
@@ -123,7 +125,7 @@ class BossNotify(Main):
 
             print(msg)
             self.already_print_num = self.already_print_num + 1
-
+            self.sethook(msg)
         return bossMsg
 
 def setup(bot):
