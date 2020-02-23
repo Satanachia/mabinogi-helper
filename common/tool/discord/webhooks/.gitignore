@@ -1,0 +1,6 @@
+*.log
+__pycache__
+webhookslog.txt
+*.spec
+config.json
+build

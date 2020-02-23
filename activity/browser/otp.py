@@ -39,18 +39,12 @@ class BeanfunLogin(object):
         res = res.text
 
         viewstate = re.findall("id=\"__VIEWSTATE\" value=\"(.*)\" />", res)[0]
-        # print(viewstate)
         eventvalidation = re.findall("id=\"__EVENTVALIDATION\" value=\"(.*)\" />", res)[0]
-        # print(eventvalidation)
         viewstateGenerator = re.findall("id=\"__VIEWSTATEGENERATOR\" value=\"(.*)\" />", res)[0]
-        # print(viewstateGenerator)
         samplecaptcha = re.findall("id=\"LBD_VCID_c_login_idpass_form_samplecaptcha\" value=\"(.*)\" />", res)[0]
-        # print(samplecaptcha)
         payload = {"__EVENTTARGET":"", "__EVENTARGUMENT":"", "__VIEWSTATE":viewstate, "__VIEWSTATEGENERATOR":viewstateGenerator, "__EVENTVALIDATION":eventvalidation, "t_AccountID":self.account, "t_Password":self.passwd, "CodeTextBox":"", "btn_login":"登入", "LBD_VCID_c_login_idpass_form_samplecaptcha":samplecaptcha}
-        # print(payload)
         res = self.session.post("https://tw.newlogin.beanfun.com/login/id-pass_form.aspx?skey=" + self.skey, data = payload)
         akey = re.findall("akey=(.*)", res.url)
-        # print(res.url)
         return akey
 
     def login(self):
@@ -60,7 +54,6 @@ class BeanfunLogin(object):
         akey = self.regularLogin()
         payload = {"SessionKey":self.skey, "AuthKey":akey}
         res = self.session.post("https://tw.beanfun.com/beanfun_block/bflogin/return.aspx", data=payload, allow_redirects=False)
-        # print(res.headers["location"])
         res = self.session.get("https://tw.beanfun.com/"+res.headers["location"])
 
         self.webtoken = self.session.cookies['bfWebToken']
@@ -86,20 +79,15 @@ class BeanfunLogin(object):
         acc = self.getAccounts()
         now = datetime.now()
         dt = now.strftime('%Y%m%d%H%M%S')
-        # print(dt)
         url = "https://tw.beanfun.com/beanfun_block/game_zone/game_start_step2.aspx?service_code=600309&service_region=A2&sotp=%s&dt=%s"%(acc['sotp'], dt)
-        # print(url)
         res = self.session.get(url)
 
         longPollingKey = re.findall("GetResultByLongPolling&key=(.*)\"", res.text)[0]
-        # print(longPollingKey)
         screatetime = re.findall("ServiceAccountCreateTime: \"([^\"]+)\"", res.text)[0]
-        # print(screatetime)
 
         url = "https://tw.newlogin.beanfun.com/generic_handlers/get_cookies.ashx"
         res = self.session.get(url)
         secretCode = re.findall("var m_strSecretCode = '(.*)';", res.text)[0]
-        # print(secretCode)
         
         payload = {"service_code":"600309", "service_region":"A2", "service_account_id":acc['sacc'], "service_sotp":acc['sotp'], "service_display_name":acc['sname'], "service_create_time":screatetime}
         res = self.session.post("https://tw.beanfun.com/beanfun_block/generic_handlers/record_service_start.ashx", data=payload)
@@ -111,7 +99,6 @@ class BeanfunLogin(object):
         
         params = {"SN":longPollingKey, "WebToken":self.webtoken, "SecretCode":secretCode, "ppppp":"1F552AEAFF976018F942B13690C990F60ED01510DDF89165F1658CCE7BC21DBA",
         "ServiceCode":"600309", "ServiceRegion":"A2", "ServiceAccount":acc['sacc'], "CreateTime":screatetime.replace(" ", "%20"), "d":end}
-        # print(params)
         url = "http://tw.beanfun.com/beanfun_block/generic_handlers/get_webstart_otp.ashx?SN=" + str(longPollingKey) + "&WebToken=" + str(self.webtoken) + "&SecretCode=" + str(secretCode) + "&ppppp=1F552AEAFF976018F942B13690C990F60ED01510DDF89165F1658CCE7BC21DBA&ServiceCode=600309&ServiceRegion=A2&ServiceAccount=" + str(acc['sacc']) + "&CreateTime=" + str(screatetime.replace(" ", "%20")) + "&d=" + str(end)
         res = self.session.get(url)
         res = res.text[2:]
@@ -125,25 +112,20 @@ class BeanfunLogin(object):
 
         otp = cipher.decrypt(binascii.a2b_hex(plain))
         otp = otp.decode()
-        # print(otp)
         return otp.strip(b'\x00'.decode())
 
 
 if __name__ == "__main__":
     
-    with open('D:/NNcode/mabinogi-helper/common/config/accountsInfo.json') as f:
+    with open('./accountsInfo.json') as f:
         accountsInfos = json.load(f)
 
     for account in accountsInfos:
-        # print(account['user'], account['pass'])
+        print(account['user'], account['pass'])
         
         model = BeanfunLogin(account['user'], account['pass'])
         otp = model.getOTP()
-        # print("acc:%s, sacc:%s, pass:%s"%(account['user'], model.sacc, otp))
-        command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:\"file://data/features.xml=Regular, Taiwan\" /N:%s /V:%s /T:gamania'%(model.sacc, otp)
-        # command = 'C:/Nexon/Mabinogi/Morrighan.exe code:1622 ver:306 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:"file://data/features.xml=Regular, Taiwan"'
-        print(command) 
-        os.system(command)
-        
-        break
-        # time.sleep(10)
+        command = 'Client.exe code:1622 ver:298 logip:210.208.80.6 logport:11000 chatip:210.208.80.10 chatport:8004 setting:\"file://data/features.xml=Regular, Taiwan\" /N:%s /V:%s /T:gamania'%(model.sacc, otp)
+        subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        print("end")
+        time.sleep(10)

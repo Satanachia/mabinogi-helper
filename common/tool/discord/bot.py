@@ -48,7 +48,21 @@ if __name__ == "__main__":
             print("重新連線....")
             time.sleep(5)
         except Exception as e:
+
+            url = 'https://discordapp.com/api/webhooks/679313398957080586/vh2QK-Ka17x6pgNoMqq2O7ffZdTR6aAQ0gA8IYeLDVvc07NwUwZm-AFRRQ5qhdA5It-O'
+            data = {}
+            data["content"] = '機器人斷線啦~'
+            # data["username"] = "custom username"
+
+            result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
             retryIndex = retryIndex + 1
             print('[Error] %s'%(str(e)))
             if (retryIndex > 3):
                 break
+
+    url = 'https://discordapp.com/api/webhooks/679313398957080586/vh2QK-Ka17x6pgNoMqq2O7ffZdTR6aAQ0gA8IYeLDVvc07NwUwZm-AFRRQ5qhdA5It-O'
+    data = {}
+    data["content"] = '機器人斷線啦~~~'
+    # data["username"] = "custom username"
+
+    result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
